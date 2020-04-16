@@ -37,7 +37,7 @@ class Deck {
 }
 
 class Player {
-  constructor(name, index) {
+  constructor(name) {
     this.name = name;
     this.cards = [];
     this.score = 0;
@@ -52,46 +52,55 @@ class PlayedCard {
 }
 
 
-
-
-
 /* Initialize Objects */
-/* let blankCard = new Card("", "", "");
-let blankPlayedCard = new PlayedCard(blankCard, "");
- */
-let action = "Choose a card to play face up."
+let actions = [
+  "Choose a card to play face up.",
+  "Choose higher, equal, or lower.",
+  "Choose a card to play face down.",
+  "YOU WIN!",
+  "YOU LOSE!"
+]
+let gameState = 0;
+
+let deck = new Deck;
+let playerOne = new Player("You");
+let playerTwo = new Player("Computer");
+
 let playerOneCard = new PlayedCard(new Card("", "", ""), "");;
 let playerTwoCard = new PlayedCard(new Card("", "", ""), "");;
 
-let deck = new Deck;
 deck.shuffleDeck();
-let playerOne = new Player("You");
-let playerTwo = new Player("Computer");
-let players = [playerOne, playerTwo];
-
 
 playerOne.cards = deck.dealCards(5);
 playerTwo.cards = deck.dealCards(5);
 
 
+const actionDisplay = document.querySelector("div.action p");
+
+const playerOneScoreDisplay = document.querySelector("div.playerOneScore");
+const playerOneHandDisplay = document.querySelector("div.playerOneHand ol");
+const playerOneCardDisplay = document.querySelector("div.playerOnePlayed");
+
+const playerTwoScoreDisplay = document.querySelector("div.playerTwoScore");
+const playerTwoHandDisplay = document.querySelector("div.playerTwoHand ol");
+const playerTwoCardDisplay = document.querySelector("div.playerTwoPlayed");
+
 const higherButton = document.getElementById("higher");
 const equalButton = document.getElementById("equal");
 const lowerButton = document.getElementById("lower");
+
 higherButton.onclick = function() {
-  playCard(higherButton);
+  guessRelationship(higherButton);
 }
 equalButton.onclick = function() {
-  playCard(equalButton);
+  guessRelationship(equalButton);
 }
 lowerButton.onclick = function() {
-  playCard(lowerButton);
+  guessRelationship(lowerButton);
 }
 
 
-
-
-/* Display Hand */
-const cardDisplay = document.querySelector("div.playerOneHand ol")
+/* Display Functions */
 function displayCard(card) {
 
   const li = document.createElement("li");
@@ -102,26 +111,15 @@ function displayCard(card) {
     playCard(button);
   }
   
-  cardDisplay.append(li);
+  playerOneHandDisplay.append(li);
   li.append(button);
 }
 
 function displayHand() {
-  cardDisplay.textContent = "";
+  playerOneHandDisplay.textContent = "";
   playerOne.cards.forEach(card => displayCard(card));
 }
 
-
-
-
-
-
-/* Display action description */
-const actionDisplay = document.querySelector("div.action p");
-const playerOneCardDisplay = document.querySelector("div.playerOnePlayed");
-const playerTwoCardDisplay = document.querySelector("div.playerTwoPlayed");
-const playerOneScoreDisplay = document.querySelector("div.playerOneScore");
-const playerTwoScoreDisplay = document.querySelector("div.playerTwoScore");
 
 function playedCardText(playedCard) {
   let text = "";
@@ -134,6 +132,7 @@ function playedCardText(playedCard) {
   return(text);
 }
 
+
 function displayGame() {
   displayHand();
   playerOneCardDisplay.textContent = playedCardText(playerOneCard);
@@ -142,134 +141,132 @@ function displayGame() {
   playerOneScoreDisplay.textContent = playerOne.score.toString();
   playerTwoScoreDisplay.textContent = playerTwo.score.toString();
   
-  actionDisplay.textContent = action;
+  actionDisplay.textContent = actions[gameState];
 
 }
 displayGame();
 
 
 /* Game Functions */
+function computerPlaysCard(face) {
+  playerTwoCard.card = playerTwo.cards[Math.floor(Math.random() * playerTwo.cards.length)];
+  playerTwoCard.face = face;
+  playerTwo.cards = playerTwo.cards.filter(c => c.id != playerTwoCard.card.id);
+
+  console.log("Player Two played " + playedCardText(playerTwoCard));
+}
+
+function computerGuessesRelationship() {
+  const guessOptions = ["higher", "higher", "higher", "higher", "equal", "lower", "lower", "lower", "lower"];
+  const guess = guessOptions[Math.floor(Math.random() * guessOptions.length)];
+
+  return(guess)
+}
+
 function playCard(cardButton) {
-  const playedCard = playerOne.cards.filter(c => c.id === cardButton.innerHTML)[0];
   
-  if (action === "Choose a card to play face up.") {
+  if (gameState === 0 || gameState === 2) {
+
+    const playedCard = playerOne.cards.filter(c => c.id === cardButton.innerHTML)[0];
     playerOneCard.card = playedCard;
-    playerOneCard.face = "up";
     playerOne.cards = playerOne.cards.filter(c => c.id != cardButton.innerHTML);
 
-    console.log("Player One played " + playedCardText(playerOneCard));
+    if (gameState === 0) {
+      playerOneCard.face = "up";
 
+      console.log("Player One played " + playedCardText(playerOneCard));
 
+      computerPlaysCard("down");
 
-    playerTwoCard.card = playerTwo.cards[Math.floor(Math.random() * playerTwo.cards.length)];
-    playerTwoCard.face = "down";
-    playerTwo.cards = playerTwo.cards.filter(c => c.id != playerTwoCard.card.id);
+      gameState = 1;
 
-    console.log("Player Two played " + playedCardText(playerTwoCard));
+    } else if (gameState === 2) {
+      
+      playerOneCard.face = "down";
 
-    action = "Choose higher, equal, or lower."
+      console.log("Player One played " + playedCardText(playerOneCard));
 
-  } else if (action === "Choose a card to play face down.") {
-    playerOneCard.card = playedCard;
-    playerOneCard.face = "down";
-    playerOne.cards = playerOne.cards.filter(c => c.id != cardButton.innerHTML);
+      let guess = computerGuessesRelationship();
 
-    console.log("Player One played " + playedCardText(playerOneCard));
+      console.log("Player Two guessed " + guess);
 
+      playerOneCard.face = "up";
+      console.log("Player One played " + playedCardText(playerOneCard));
 
+      const truth = compareCards(playerTwoCard.card, playerOneCard.card);
 
+      console.log("Actual is " + truth);
 
-    const playerTwoGuessOptions = ["higher", "higher", "higher", "higher", "equal", "lower", "lower", "lower", "lower"];
-    const guess = playerTwoGuessOptions[Math.floor(Math.random() * playerTwoGuessOptions.length)];
+      changeScore(playerTwo, playerOne, guess, truth);
 
-    console.log("Player Two guessed " + guess);
+      playerOneCard = new PlayedCard(new Card("", "", ""), "");;
+      playerTwoCard = new PlayedCard(new Card("", "", ""), "");;
 
-    playerOneCard.face = "up";
-    console.log("Player One played " + playedCardText(playerOneCard));
-
-    const truth = compareCards(playerOneCard.card, playerTwoCard.card);
-
-    console.log("Actual is " + truth);
-
-    if (guess === truth) {
-      if (guess === "equal") {
-        console.log("Player 2 gains 5 points");
-        playerTwo.score += 5;
-      } else {
-        console.log("Player 2 gains 1 point");
-        playerTwo.score += 1;
-      }
-    } else {
-      console.log("Player 1 gains 1 point");
-      playerOne.score += 1;    
+      gameState = 0;
     }
 
-    playerOneCard = new PlayedCard(new Card("", "", ""), "");;
-    playerTwoCard = new PlayedCard(new Card("", "", ""), "");;
+    if (playerOne.cards.length === 0) {
+      playerOne.cards = deck.dealCards(5);
+      playerTwo.cards = deck.dealCards(5);
+      console.log("New hands are dealt");
+    }
 
-    action = "Choose a card to play face up."
+    if (playerOne.score >= 11) {
+      gameState = 3;
+    } else if (playerTwo.score >= 11) {
+      gameState = 4;
+    }
+
+    displayGame();
+  }
+}
 
 
-  } else if (action === "Choose higher, equal, or lower.") {
+function guessRelationship(relationshipButton) {
+  if (gameState === 1) {
     
-    const guess = cardButton.id;
+    const guess = relationshipButton.id;
 
     console.log("Player One guessed " + guess);
 
     playerTwoCard.face = "up";
     console.log("Player Two played " + playedCardText(playerTwoCard));
 
-    const truth = compareCards(playerTwoCard.card, playerOneCard.card);
+    const truth = compareCards(playerOneCard.card, playerTwoCard.card);
 
     console.log("Actual is " + truth);
-
-    if (guess === truth) {
-      if (guess === "equal") {
-        console.log("Player 1 gains 5 points");
-        playerOne.score += 5;
-      } else {
-        console.log("Player 1 gains 1 point");
-        playerOne.score += 1;
-      }
-    } else {
-      console.log("Player 2 gains 1 point");
-      playerTwo.score += 1;    
-    }
+    
+    changeScore(playerOne, playerTwo, guess, truth);
 
     playerOneCard = new PlayedCard(new Card("", "", ""), "");;
     playerTwoCard = new PlayedCard(new Card("", "", ""), "");;
 
+    computerPlaysCard("up");
 
-    playerTwoCard.card = playerTwo.cards[Math.floor(Math.random() * playerTwo.cards.length)];
-
-    playerTwoCard.face = "up";
-    playerTwo.cards = playerTwo.cards.filter(c => c.id != playerTwoCard.card.id);
-
-    console.log("Player Two played " + playedCardText(playerTwoCard));
-
-
-
-    action = "Choose a card to play face down."
-  }
-
-  if (playerOne.cards.length === 0) {
-    playerOne.cards = deck.dealCards(5);
-    playerTwo.cards = deck.dealCards(5);
-    console.log("New hands are dealt");
-  }
-
-  if (playerOne.score >= 11) {
-    action = "YOU WIN!";
-  } else if (playerTwo.score >= 11) {
-    action = "YOU LOSE!";
+    gameState = 2;
   }
 
   displayGame();
 }
 
 
+function changeScore(guesser, player, guess, truth) {
+  if (guess === truth) {
+      if (guess === "equal") {
+        console.log(guesser.name + " gains 5 points");
+        guesser.score += 5;
+      } else {
+        console.log(guesser.name + " gains 1 point");
+        guesser.score += 1;
+      }
+    } else {
+      console.log(player.name + " gains 1 point");
+      player.score += 1;    
+    }
+}
 
-function compareCards(playerCard, guesserCard) {
+
+function compareCards(guesserCard, playerCard) {
   if (playerCard.value > guesserCard.value) {
     return "higher";
   } else if (playerCard.value < guesserCard.value) {
