@@ -1,0 +1,5 @@
+/* Card images courtesy of https://code.google.com/archive/p/vector-playing-cards/ */
+
+.cards li {
+  display: inline;
+}

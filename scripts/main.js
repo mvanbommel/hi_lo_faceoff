@@ -4,7 +4,7 @@ class Card {
     this.suit = suit;
     this.rank = rank;
     this.value = value;
-    this.id = this.rank + " " + this.suit
+    this.id = this.rank + "_of_" + this.suit
   }
 }
 
@@ -66,8 +66,8 @@ let deck = new Deck;
 let playerOne = new Player("You");
 let playerTwo = new Player("Computer");
 
-let playerOneCard = new PlayedCard(new Card("", "", ""), "");;
-let playerTwoCard = new PlayedCard(new Card("", "", ""), "");;
+let playerOneCard = new PlayedCard(new Card("", "", ""), "");
+let playerTwoCard = new PlayedCard(new Card("", "", ""), "");
 
 deck.shuffleDeck();
 
@@ -78,12 +78,12 @@ playerTwo.cards = deck.dealCards(5);
 const actionDisplay = document.querySelector("div.action p");
 
 const playerOneScoreDisplay = document.querySelector("div.playerOneScore");
-const playerOneHandDisplay = document.querySelector("div.playerOneHand ol");
-const playerOneCardDisplay = document.querySelector("div.playerOnePlayed");
+const playerOneHandDisplay = document.querySelector("#playerOneHand");
+const playerOneCardDisplay = document.querySelector("#playerOnePlayed");
 
 const playerTwoScoreDisplay = document.querySelector("div.playerTwoScore");
-const playerTwoHandDisplay = document.querySelector("div.playerTwoHand ol");
-const playerTwoCardDisplay = document.querySelector("div.playerTwoPlayed");
+const playerTwoHandDisplay = document.querySelector("#playerTwoHand");
+const playerTwoCardDisplay = document.querySelector("#playerTwoPlayed");
 
 const higherButton = document.getElementById("higher");
 const equalButton = document.getElementById("equal");
@@ -101,23 +101,40 @@ lowerButton.onclick = function() {
 
 
 /* Display Functions */
-function displayCard(card) {
+function displayCard(card, face, displayElement) {
 
   const li = document.createElement("li");
-  const button = document.createElement("button");
+  const image = document.createElement("img");
 
-  button.innerText = card.id;
-  button.onclick = function() {
-    playCard(button);
+  if (face === "up") {
+    image.onclick = function() {
+      playCard(image);
+    }
+
+    image.src = "images/cards/" + card.id + ".svg";
+    image.alt = card.id;
+  } else {
+    image.src = "images/cards/red_joker.svg";
+    image.alt = "card_back";
   }
   
-  playerOneHandDisplay.append(li);
-  li.append(button);
+  image.height = 72.6;
+  image.width = 50;
+  
+  displayElement.append(li);
+
+  li.append(image);
 }
 
-function displayHand() {
+
+function displayPlayerOneHand() {
   playerOneHandDisplay.textContent = "";
-  playerOne.cards.forEach(card => displayCard(card));
+  playerOne.cards.forEach(card => displayCard(card, "up", playerOneHandDisplay))
+}
+
+function displayPlayerTwoHand() {
+  playerTwoHandDisplay.textContent = "";
+  playerTwo.cards.forEach(card => displayCard(card, "down", playerTwoHandDisplay));
 }
 
 
@@ -134,9 +151,16 @@ function playedCardText(playedCard) {
 
 
 function displayGame() {
-  displayHand();
-  playerOneCardDisplay.textContent = playedCardText(playerOneCard);
-  playerTwoCardDisplay.textContent = playedCardText(playerTwoCard);
+  displayPlayerOneHand();
+  displayPlayerTwoHand();
+
+  if (playerOneCard.card.rank != "") {
+    displayCard(playerOneCard.card, playerOneCard.face, playerOneCardDisplay,);
+  }
+  if (playerTwoCard.card.rank != "") {
+    displayCard(playerTwoCard.card, playerTwoCard.face, playerTwoCardDisplay);
+  }
+  
 
   playerOneScoreDisplay.textContent = playerOne.score.toString();
   playerTwoScoreDisplay.textContent = playerTwo.score.toString();
@@ -163,13 +187,13 @@ function computerGuessesRelationship() {
   return(guess)
 }
 
-function playCard(cardButton) {
+function playCard(cardImage) {
   
   if (gameState === 0 || gameState === 2) {
 
-    const playedCard = playerOne.cards.filter(c => c.id === cardButton.innerHTML)[0];
+    const playedCard = playerOne.cards.filter(c => c.id === cardImage.alt)[0];
     playerOneCard.card = playedCard;
-    playerOne.cards = playerOne.cards.filter(c => c.id != cardButton.innerHTML);
+    playerOne.cards = playerOne.cards.filter(c => c.id != cardImage.alt);
 
     if (gameState === 0) {
       playerOneCard.face = "up";
@@ -199,22 +223,9 @@ function playCard(cardButton) {
 
       changeScore(playerTwo, playerOne, guess, truth);
 
-      playerOneCard = new PlayedCard(new Card("", "", ""), "");;
-      playerTwoCard = new PlayedCard(new Card("", "", ""), "");;
-
       gameState = 0;
-    }
 
-    if (playerOne.cards.length === 0) {
-      playerOne.cards = deck.dealCards(5);
-      playerTwo.cards = deck.dealCards(5);
-      console.log("New hands are dealt");
-    }
-
-    if (playerOne.score >= 11) {
-      gameState = 3;
-    } else if (playerTwo.score >= 11) {
-      gameState = 4;
+      endTurn();
     }
 
     displayGame();
@@ -235,18 +246,17 @@ function guessRelationship(relationshipButton) {
     const truth = compareCards(playerOneCard.card, playerTwoCard.card);
 
     console.log("Actual is " + truth);
-    
+
     changeScore(playerOne, playerTwo, guess, truth);
 
-    playerOneCard = new PlayedCard(new Card("", "", ""), "");;
-    playerTwoCard = new PlayedCard(new Card("", "", ""), "");;
+    gameState = 2;
+
+    endTurn();
 
     computerPlaysCard("up");
 
-    gameState = 2;
+    displayGame();
   }
-
-  displayGame();
 }
 
 
@@ -276,3 +286,26 @@ function compareCards(guesserCard, playerCard) {
   }
 }
 
+function resetPlayedCards() {
+  playerOneCard = new PlayedCard(new Card("", "", ""), "");
+  playerTwoCard = new PlayedCard(new Card("", "", ""), "");
+
+  playerOneCardDisplay.textContent = "";
+  playerTwoCardDisplay.textContent = "";
+}
+
+function endTurn() {
+  resetPlayedCards();
+
+  if (playerOne.cards.length === 0) {
+    playerOne.cards = deck.dealCards(5);
+    playerTwo.cards = deck.dealCards(5);
+    console.log("New hands are dealt");
+  }
+
+  if (playerOne.score >= 5) {
+    gameState = 3;
+  } else if (playerTwo.score >= 5) {
+    gameState = 4;
+  }
+}
