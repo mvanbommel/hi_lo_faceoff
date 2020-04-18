@@ -16,55 +16,43 @@
   </head>
   <body>
 
-    <h1>Game State</h1>
-    <div class="action">
-      <p></p>
-    </div>
+    <div id="gameArea">
+      <div id="score">
+        <p></p>
+      </div>
 
-    <h1>Player 1 Hand</h1>
-    <div class="cards">
-      <ul id="playerOneHand">
-      </ul>
-    </div>
+      <div class="cards">
+        <ul class="center", id="playerTwoHand">
+        </ul>
+      </div>
 
-    <h1>Player 2 Hand</h1>
-    <div class="cards">
-      <ul id="playerTwoHand">
-      </ul>
-    </div>
+      <div class="cards", height>
+        <ul class="center", id="playerTwoPlayed">
+        </ul>
+      </div>
 
-    <h1>Your Played Card</h1>
-    <div class="cards">
-      <ul id="playerOnePlayed">
-      </ul>
-    </div>
+      <div class="action">
+        <p class="center", ></p>
+        <div id="relationshipButtons">
+          <ul class="center", >
+            <li><button id="higher">Higher</button></li>
+            <li><button id="equal">Equal</button></li>
+            <li><button id="lower">Lower</button></li>
+          </ul>
+        </div>
+      </div>
 
-    <h1>Opponent Played Card</h1>
-    <div class="cards">
-      <ul id="playerTwoPlayed">
-      </ul>
-    </div>
+      <div class="cards">
+        <ul class="center", id="playerOnePlayed">
+        </ul>
+      </div>
 
-    <h1>Actions</h1>
-    <div>
-      <ul>
-        <li><button id="higher">Higher</button></li>
-        <li><button id="equal">Equal</button></li>
-        <li><button id="lower">Lower</button></li>
-      </ul>
-    </div>
+      <div class="cards">
+        <ul class="center", id="playerOneHand">
+        </ul>
+      </div>
 
-    <h1>Player 1 Score</h1>
-    <div class="playerOneScore">
-      <p></p>
     </div>
-
-    <h1>Player 2 Score</h1>
-    <div class="playerTwoScore">
-      <p></p>
-    </div>
-
-  
 
     <script src="scripts/main.js"></script>
   </body>

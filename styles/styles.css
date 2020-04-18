@@ -1,5 +1,30 @@
 /* Card images courtesy of https://code.google.com/archive/p/vector-playing-cards/ */
 
-.cards li {
-  display: inline;
+#gameArea {
+ width: 100%;
+ min-width: 300px;
+ text-align: center;
 }
+
+.center {
+  padding: 0;
+  width: 100%;
+  margin: auto;
+}
+
+.cards {
+  height: 92px;
+  padding: 10px;
+}
+
+li {
+  display: inline;
+  text-align: center;
+  padding: 5px;
+}
+
+#score {
+  height: 50px;
+  padding: 10px;
+}
+

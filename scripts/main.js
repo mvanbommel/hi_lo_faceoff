@@ -52,52 +52,7 @@ class PlayedCard {
 }
 
 
-/* Initialize Objects */
-let actions = [
-  "Choose a card to play face up.",
-  "Choose higher, equal, or lower.",
-  "Choose a card to play face down.",
-  "YOU WIN!",
-  "YOU LOSE!"
-]
-let gameState = 0;
 
-let deck = new Deck;
-let playerOne = new Player("You");
-let playerTwo = new Player("Computer");
-
-let playerOneCard = new PlayedCard(new Card("", "", ""), "");
-let playerTwoCard = new PlayedCard(new Card("", "", ""), "");
-
-deck.shuffleDeck();
-
-playerOne.cards = deck.dealCards(5);
-playerTwo.cards = deck.dealCards(5);
-
-
-const actionDisplay = document.querySelector("div.action p");
-
-const playerOneScoreDisplay = document.querySelector("div.playerOneScore");
-const playerOneHandDisplay = document.querySelector("#playerOneHand");
-const playerOneCardDisplay = document.querySelector("#playerOnePlayed");
-
-const playerTwoScoreDisplay = document.querySelector("div.playerTwoScore");
-const playerTwoHandDisplay = document.querySelector("#playerTwoHand");
-const playerTwoCardDisplay = document.querySelector("#playerTwoPlayed");
-
-const higherButton = document.getElementById("higher");
-const equalButton = document.getElementById("equal");
-const lowerButton = document.getElementById("lower");
-
-higherButton.onclick = function() {
-  guessRelationship(higherButton);
-}
-equalButton.onclick = function() {
-  guessRelationship(equalButton);
-}
-lowerButton.onclick = function() {
-  guessRelationship(lowerButton);
-}
 
 
 /* Display Functions */
@@ -161,14 +116,18 @@ function displayGame() {
     displayCard(playerTwoCard.card, playerTwoCard.face, playerTwoCardDisplay);
   }
   
-
-  playerOneScoreDisplay.textContent = playerOne.score.toString();
-  playerTwoScoreDisplay.textContent = playerTwo.score.toString();
+  console.log(playerOne.score.toString() + " - " + playerTwo.score.toString());
+  scoreDisplay.textContent = "(You) " + playerOne.score.toString() + " - " + playerTwo.score.toString() + " (CPU)";
   
-  actionDisplay.textContent = actions[gameState];
+  actionDisplay.innerText = actions[gameState];
+
+  if (gameState === 1) {
+    relationshipButtons.style.visibility = "visible";
+  } else {
+    relationshipButtons.style.visibility = "hidden";
+  }
 
 }
-displayGame();
 
 
 /* Game Functions */
@@ -309,3 +268,53 @@ function endTurn() {
     gameState = 4;
   }
 }
+
+
+/* Initialize Objects */
+let actions = [
+  "Choose a card to play face up.",
+  "Opponent's card is:",
+  "Choose a card to play face down.",
+  "YOU WIN!",
+  "YOU LOSE!"
+]
+let gameState = 0;
+
+let deck = new Deck;
+let playerOne = new Player("You");
+let playerTwo = new Player("Computer");
+
+let playerOneCard = new PlayedCard(new Card("", "", ""), "");
+let playerTwoCard = new PlayedCard(new Card("", "", ""), "");
+
+deck.shuffleDeck();
+
+playerOne.cards = deck.dealCards(5);
+playerTwo.cards = deck.dealCards(5);
+
+
+const playerOneHandDisplay = document.querySelector("#playerOneHand");
+const playerOneCardDisplay = document.querySelector("#playerOnePlayed");
+
+const playerTwoHandDisplay = document.querySelector("#playerTwoHand");
+const playerTwoCardDisplay = document.querySelector("#playerTwoPlayed");
+
+const scoreDisplay = document.querySelector("#score");
+const actionDisplay = document.querySelector("div.action p");
+const relationshipButtons = document.querySelector("#relationshipButtons");
+
+const higherButton = document.getElementById("higher");
+const equalButton = document.getElementById("equal");
+const lowerButton = document.getElementById("lower");
+
+higherButton.onclick = function() {
+  guessRelationship(higherButton);
+}
+equalButton.onclick = function() {
+  guessRelationship(equalButton);
+}
+lowerButton.onclick = function() {
+  guessRelationship(lowerButton);
+}
+
+displayGame();
