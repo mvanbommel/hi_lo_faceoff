@@ -13,8 +13,11 @@ class Deck {
       this.cards = [];    
 
       const suits = ['clubs', 'diamonds', 'hearts', 'spades'];
-      const ranks = ['ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king'];
-      const values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+/*       const ranks = ['ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king'];
+      const values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]; */
+
+      const ranks = ['2', '2', '2', '2', '2', '2', '2', '2', '2', '2',]
+      const values = [2, 2, 2, ,2 , 2, 2, 2, 2, 2, 2]
 
       for (let i = 0; i < suits.length; i++) {
         for (let j = 0; j < ranks.length; j++) {
@@ -37,10 +40,13 @@ class Deck {
 }
 
 class Player {
-  constructor(name) {
+  constructor(name, player) {
     this.name = name;
     this.cards = [];
     this.score = 0;
+    this.playedCard = new PlayedCard(blankCard, "");
+    this.playedCardDisplay = document.querySelector("#" + player + "Played");
+    this.handDisplay = document.querySelector("#" + player + "Hand");
   }
 }
 
@@ -51,7 +57,7 @@ class PlayedCard {
   }
 }
 
-
+const blankCard = new Card("", "", "");
 
 
 
@@ -83,13 +89,13 @@ function displayCard(card, face, displayElement) {
 
 
 function displayPlayerOneHand() {
-  playerOneHandDisplay.textContent = "";
-  playerOne.cards.forEach(card => displayCard(card, "up", playerOneHandDisplay))
+  playerOne.handDisplay.textContent = "";
+  playerOne.cards.forEach(card => displayCard(card, "up", playerOne.handDisplay))
 }
 
 function displayPlayerTwoHand() {
-  playerTwoHandDisplay.textContent = "";
-  playerTwo.cards.forEach(card => displayCard(card, "down", playerTwoHandDisplay));
+  playerTwo.handDisplay.textContent = "";
+  playerTwo.cards.forEach(card => displayCard(card, "down", playerTwo.handDisplay));
 }
 
 
@@ -104,27 +110,53 @@ function playedCardText(playedCard) {
   return(text);
 }
 
+function displayPlayedCard(player) {
+  if (player.playedCard.card.rank != "") {
+    player.playedCardDisplay.textContent = "";
+    displayCard(player.playedCard.card, player.playedCard.face, player.playedCardDisplay,);
+  }
+}
+
+function displayAction() {
+  actionDisplay.innerText = actions[gameState];
+}
+
+function relationshipButtonVisibility(status) {
+  relationshipButtons.style.visibility = status;
+}
+
+function displayComparison(guess, truth) {
+  let message = "";
+
+  if (guess === truth) {
+    if (guess === "equal") {
+      message = "Correct. +5 points";
+    } else{
+      message = "Correct. +1 point";
+    }
+  } else {
+    message = "Incorrect.";
+  }
+
+  actionDisplay.innerText = message;
+}
 
 function displayGame() {
   displayPlayerOneHand();
   displayPlayerTwoHand();
 
-  if (playerOneCard.card.rank != "") {
-    displayCard(playerOneCard.card, playerOneCard.face, playerOneCardDisplay,);
-  }
-  if (playerTwoCard.card.rank != "") {
-    displayCard(playerTwoCard.card, playerTwoCard.face, playerTwoCardDisplay);
-  }
+  displayPlayedCard(playerOne);
+  displayPlayedCard(playerTwo);
   
   console.log(playerOne.score.toString() + " - " + playerTwo.score.toString());
   scoreDisplay.textContent = "(You) " + playerOne.score.toString() + " - " + playerTwo.score.toString() + " (CPU)";
   
-  actionDisplay.innerText = actions[gameState];
+  displayAction();
 
-  if (gameState === 1) {
-    relationshipButtons.style.visibility = "visible";
+  if (gameState === 2) {
+    relationshipButtonVisibility("visible");
   } else {
-    relationshipButtons.style.visibility = "hidden";
+    relationshipButtonVisibility("hidden");
   }
 
 }
@@ -132,11 +164,19 @@ function displayGame() {
 
 /* Game Functions */
 function computerPlaysCard(face) {
-  playerTwoCard.card = playerTwo.cards[Math.floor(Math.random() * playerTwo.cards.length)];
-  playerTwoCard.face = face;
-  playerTwo.cards = playerTwo.cards.filter(c => c.id != playerTwoCard.card.id);
+  playerTwo.playedCard.card = playerTwo.cards[Math.floor(Math.random() * playerTwo.cards.length)];
+  playerTwo.playedCard.face = face;
+  playerTwo.cards = playerTwo.cards.filter(c => c.id != playerTwo.playedCard.card.id);
 
-  console.log("Player Two played " + playedCardText(playerTwoCard));
+  console.log("Player Two played " + playedCardText(playerTwo.playedCard));
+
+  if (face === "down") {
+    gameState = 2;
+  } else if (face === "up") {
+    gameState = 3;
+  }
+
+  displayGame();
 }
 
 function computerGuessesRelationship() {
@@ -146,43 +186,65 @@ function computerGuessesRelationship() {
   return(guess)
 }
 
-function playCard(cardImage) {
+async function playCard(cardImage) {
   
-  if (gameState === 0 || gameState === 2) {
+  if (gameState === 1 || gameState === 3) {
 
     const playedCard = playerOne.cards.filter(c => c.id === cardImage.alt)[0];
-    playerOneCard.card = playedCard;
+    playerOne.playedCard.card = playedCard;
     playerOne.cards = playerOne.cards.filter(c => c.id != cardImage.alt);
 
-    if (gameState === 0) {
-      playerOneCard.face = "up";
+    if (gameState === 1) {
+      playerOne.playedCard.face = "up";
 
-      console.log("Player One played " + playedCardText(playerOneCard));
+      displayPlayerOneHand();
+      displayPlayedCard(playerOne);
 
+      console.log("Player One played " + playedCardText(playerOne.playedCard));
+
+      gameState = 0;
+      displayAction();
+
+      await sleep(1000);
       computerPlaysCard("down");
 
-      gameState = 1;
-
-    } else if (gameState === 2) {
+    } else if (gameState === 3) {
       
-      playerOneCard.face = "down";
+      playerOne.playedCard.face = "down";
 
-      console.log("Player One played " + playedCardText(playerOneCard));
+      displayPlayerOneHand();
+      displayPlayedCard(playerOne);
+
+      gameState = 0;
+      displayAction();
+
+      console.log("Player One played " + playedCardText(playerOne.playedCard));
+
+      await sleep(1000);
 
       let guess = computerGuessesRelationship();
 
       console.log("Player Two guessed " + guess);
+      actionDisplay.innerText = "Opponent guesses " + guess;
 
-      playerOneCard.face = "up";
-      console.log("Player One played " + playedCardText(playerOneCard));
+      await sleep(1000);
 
-      const truth = compareCards(playerTwoCard.card, playerOneCard.card);
+      playerOne.playedCard.face = "up";
+      console.log("Player One played " + playedCardText(playerOne.playedCard));
+      displayPlayedCard(playerOne);
+
+      await sleep(1000);
+
+      const truth = compareCards(playerTwo.playedCard.card, playerOne.playedCard.card);
 
       console.log("Actual is " + truth);
+      displayComparison(guess, truth);
+
+      await sleep(1000);
 
       changeScore(playerTwo, playerOne, guess, truth);
 
-      gameState = 0;
+      gameState = 1;
 
       endTurn();
     }
@@ -192,27 +254,41 @@ function playCard(cardImage) {
 }
 
 
-function guessRelationship(relationshipButton) {
-  if (gameState === 1) {
+async function guessRelationship(relationshipButton) {
+  if (gameState === 2) {
     
+    gameState = 0;
+    displayAction();
+    relationshipButtonVisibility("hidden");
+
     const guess = relationshipButton.id;
 
     console.log("Player One guessed " + guess);
 
-    playerTwoCard.face = "up";
-    console.log("Player Two played " + playedCardText(playerTwoCard));
+    await sleep(1000);
 
-    const truth = compareCards(playerOneCard.card, playerTwoCard.card);
+    playerTwo.playedCard.face = "up";
+    console.log("Player Two played " + playedCardText(playerTwo.playedCard));
+    displayGame();
+
+    await sleep(1000);
+
+    const truth = compareCards(playerOne.playedCard.card, playerTwo.playedCard.card);
 
     console.log("Actual is " + truth);
+    displayComparison(guess, truth);
 
     changeScore(playerOne, playerTwo, guess, truth);
 
-    gameState = 2;
+    await sleep(1000);
 
     endTurn();
 
-    computerPlaysCard("up");
+    /* Only play card if gameState is 0, otherwise game has ended */
+    if (gameState === 0) {
+      computerPlaysCard("up");
+    }
+
 
     displayGame();
   }
@@ -246,11 +322,11 @@ function compareCards(guesserCard, playerCard) {
 }
 
 function resetPlayedCards() {
-  playerOneCard = new PlayedCard(new Card("", "", ""), "");
-  playerTwoCard = new PlayedCard(new Card("", "", ""), "");
+  playerOne.playedCard = new PlayedCard(new Card("", "", ""), "");
+  playerTwo.playedCard = new PlayedCard(new Card("", "", ""), "");
 
-  playerOneCardDisplay.textContent = "";
-  playerTwoCardDisplay.textContent = "";
+  playerOne.playedCardDisplay.textContent = "";
+  playerTwo.playedCardDisplay.textContent = "";
 }
 
 function endTurn() {
@@ -261,43 +337,38 @@ function endTurn() {
     playerTwo.cards = deck.dealCards(5);
     console.log("New hands are dealt");
   }
-
+console.log(playerOne.score);
   if (playerOne.score >= 5) {
-    gameState = 3;
+    gameState = 4; 
   } else if (playerTwo.score >= 5) {
-    gameState = 4;
+    gameState = 5;
   }
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 
 /* Initialize Objects */
 let actions = [
+  "...",
   "Choose a card to play face up.",
   "Opponent's card is:",
   "Choose a card to play face down.",
   "YOU WIN!",
   "YOU LOSE!"
 ]
-let gameState = 0;
+let gameState = 1;
 
 let deck = new Deck;
-let playerOne = new Player("You");
-let playerTwo = new Player("Computer");
-
-let playerOneCard = new PlayedCard(new Card("", "", ""), "");
-let playerTwoCard = new PlayedCard(new Card("", "", ""), "");
+let playerOne = new Player("You", "playerOne");
+let playerTwo = new Player("Computer", "playerTwo");
 
 deck.shuffleDeck();
 
 playerOne.cards = deck.dealCards(5);
 playerTwo.cards = deck.dealCards(5);
-
-
-const playerOneHandDisplay = document.querySelector("#playerOneHand");
-const playerOneCardDisplay = document.querySelector("#playerOnePlayed");
-
-const playerTwoHandDisplay = document.querySelector("#playerTwoHand");
-const playerTwoCardDisplay = document.querySelector("#playerTwoPlayed");
 
 const scoreDisplay = document.querySelector("#score");
 const actionDisplay = document.querySelector("div.action p");
