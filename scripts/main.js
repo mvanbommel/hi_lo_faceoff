@@ -56,6 +56,15 @@ class PlayedCard {
 
 const blankCard = new Card("", "", "");
 
+let screenWidth = window.screen.availWidth;
+window.onresize = function() {
+  screenWidth = window.screen.availWidth;
+  this.displayGame();
+  console.log(screenWidth);
+}
+
+
+
 
 
 /* Display Functions */
@@ -76,8 +85,19 @@ function displayCard(card, face, displayElement) {
     image.alt = "card_back";
   }
   
-  image.height = 72.6;
-  image.width = 50;
+  /* Native card image dimensions */
+  const nativeHeight = 72.6;
+  const nativeWidth = 50;
+ 
+  /* If screen width is greater than min-width, scale up card size to at most 1.5x */
+  if (screenWidth > 320) {
+    let dimensionMultiplier = Math.min(1.5, screenWidth / 320);
+    image.height = dimensionMultiplier * nativeHeight + 20;
+    image.width = dimensionMultiplier * nativeWidth;
+  } else {
+    image.height = nativeHeight + 20;
+    image.width = nativeWidth;
+  }
   
   displayElement.append(li);
 
@@ -388,3 +408,5 @@ lowerButton.onclick = function() {
 }
 
 displayGame();
+
+

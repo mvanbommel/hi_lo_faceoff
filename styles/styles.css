@@ -2,7 +2,7 @@
 
 #gameArea {
  width: 100%;
- min-width: 300px;
+ min-width: 320px;
  text-align: center;
 }
 
@@ -13,7 +13,7 @@
 }
 
 .cards {
-  height: 92px;
+  height: 128.9px;
   padding: 10px;
 }
 
