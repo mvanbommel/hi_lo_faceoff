@@ -59,8 +59,7 @@ const blankCard = new Card("", "", "");
 let screenWidth = window.screen.availWidth;
 window.onresize = function() {
   screenWidth = window.screen.availWidth;
-  this.displayGame();
-  console.log(screenWidth);
+  displayGame();
 }
 
 
@@ -165,7 +164,6 @@ function displayGame() {
   displayPlayedCard(playerOne);
   displayPlayedCard(playerTwo);
   
-  console.log(playerOne.score.toString() + " - " + playerTwo.score.toString());
   scoreDisplay.textContent = "(You) " + playerOne.score.toString() + " - " + playerTwo.score.toString() + " (CPU)";
   
   displayAction();
@@ -184,8 +182,6 @@ function computerPlaysCard(face) {
   playerTwo.playedCard.card = playerTwo.cards[Math.floor(Math.random() * playerTwo.cards.length)];
   playerTwo.playedCard.face = face;
   playerTwo.cards = playerTwo.cards.filter(c => c.id != playerTwo.playedCard.card.id);
-
-  console.log("Player Two played " + playedCardText(playerTwo.playedCard));
 
   if (face === "down") {
     gameState = 2;
@@ -217,8 +213,6 @@ async function playCard(cardImage) {
       displayPlayerOneHand();
       displayPlayedCard(playerOne);
 
-      console.log("Player One played " + playedCardText(playerOne.playedCard));
-
       gameState = 0;
       displayAction();
 
@@ -235,26 +229,21 @@ async function playCard(cardImage) {
       gameState = 0;
       displayAction();
 
-      console.log("Player One played " + playedCardText(playerOne.playedCard));
-
       await sleep(1000);
 
       let guess = computerGuessesRelationship();
 
-      console.log("Player Two guessed " + guess);
       actionDisplay.textContent = "Opponent guesses " + guess;
 
       await sleep(1000);
 
       playerOne.playedCard.face = "up";
-      console.log("Player One played " + playedCardText(playerOne.playedCard));
       displayPlayedCard(playerOne);
 
       await sleep(1000);
 
       const truth = compareCards(playerTwo.playedCard.card, playerOne.playedCard.card);
 
-      console.log("Actual is " + truth);
       displayComparison(guess, truth);
 
       await sleep(1000);
@@ -280,19 +269,15 @@ async function guessRelationship(relationshipButton) {
 
     const guess = relationshipButton.id;
 
-    console.log("Player One guessed " + guess);
-
     await sleep(1000);
 
     playerTwo.playedCard.face = "up";
-    console.log("Player Two played " + playedCardText(playerTwo.playedCard));
     displayGame();
 
     await sleep(1000);
 
     const truth = compareCards(playerOne.playedCard.card, playerTwo.playedCard.card);
 
-    console.log("Actual is " + truth);
     displayComparison(guess, truth);
 
     changeScore(playerOne, playerTwo, guess, truth);
@@ -315,14 +300,11 @@ async function guessRelationship(relationshipButton) {
 function changeScore(guesser, player, guess, truth) {
   if (guess === truth) {
       if (guess === "equal") {
-        console.log(guesser.name + " gains 5 points");
         guesser.score += 5;
       } else {
-        console.log(guesser.name + " gains 1 point");
         guesser.score += 1;
       }
     } else {
-      console.log(player.name + " gains 1 point");
       player.score += 1;    
     }
 }
@@ -352,9 +334,7 @@ function endTurn() {
   if (playerOne.cards.length === 0) {
     playerOne.cards = deck.dealCards(5);
     playerTwo.cards = deck.dealCards(5);
-    console.log("New hands are dealt");
   }
-console.log(playerOne.score);
   if (playerOne.score >= 5) {
     gameState = 4; 
   } else if (playerTwo.score >= 5) {
