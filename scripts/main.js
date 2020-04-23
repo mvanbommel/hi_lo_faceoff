@@ -13,11 +13,8 @@ class Deck {
       this.cards = [];    
 
       const suits = ['clubs', 'diamonds', 'hearts', 'spades'];
-/*       const ranks = ['ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king'];
-      const values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]; */
-
-      const ranks = ['2', '2', '2', '2', '2', '2', '2', '2', '2', '2',]
-      const values = [2, 2, 2, ,2 , 2, 2, 2, 2, 2, 2]
+     const ranks = ['ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king'];
+      const values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]; 
 
       for (let i = 0; i < suits.length; i++) {
         for (let j = 0; j < ranks.length; j++) {
@@ -118,7 +115,7 @@ function displayPlayedCard(player) {
 }
 
 function displayAction() {
-  actionDisplay.innerText = actions[gameState];
+  actionDisplay.textContent = actions[gameState];
 }
 
 function relationshipButtonVisibility(status) {
@@ -138,7 +135,7 @@ function displayComparison(guess, truth) {
     message = "Incorrect.";
   }
 
-  actionDisplay.innerText = message;
+  actionDisplay.textContent = message;
 }
 
 function displayGame() {
@@ -225,7 +222,7 @@ async function playCard(cardImage) {
       let guess = computerGuessesRelationship();
 
       console.log("Player Two guessed " + guess);
-      actionDisplay.innerText = "Opponent guesses " + guess;
+      actionDisplay.textContent = "Opponent guesses " + guess;
 
       await sleep(1000);
 
@@ -372,6 +369,8 @@ playerTwo.cards = deck.dealCards(5);
 
 const scoreDisplay = document.querySelector("#score");
 const actionDisplay = document.querySelector("div.action p");
+
+/** @type {HTMLElement} */
 const relationshipButtons = document.querySelector("#relationshipButtons");
 
 const higherButton = document.getElementById("higher");
