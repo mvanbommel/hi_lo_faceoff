@@ -56,9 +56,15 @@ class PlayedCard {
 
 const blankCard = new Card("", "", "");
 
+/* Update display when screen size changes */
+const nativeCardHeight = 72.6;
+const nativeCardWidth = 50;
+
 let screenWidth = window.screen.availWidth;
+let screenHeight = window.screen.availHeight;
 window.onresize = function() {
   screenWidth = window.screen.availWidth;
+  screenHeight = window.screen.availHeight;
   displayGame();
 }
 
@@ -68,6 +74,8 @@ window.onresize = function() {
 
 /* Display Functions */
 function displayCard(card, face, displayElement) {
+
+  const cardElements = document.getElementsByClassName("cards");
 
   const li = document.createElement("li");
   const image = document.createElement("img");
@@ -80,22 +88,23 @@ function displayCard(card, face, displayElement) {
     image.src = "images/cards/" + card.id + ".svg";
     image.alt = card.id;
   } else {
-    image.src = "images/cards/red_joker.svg";
+    image.src = "images/cards/card_back.svg";
     image.alt = "card_back";
   }
-  
-  /* Native card image dimensions */
-  const nativeHeight = 72.6;
-  const nativeWidth = 50;
  
-  /* If screen width is greater than min-width, scale up card size to at most 1.5x */
-  if (screenWidth > 320) {
-    let dimensionMultiplier = Math.min(1.5, screenWidth / 320);
-    image.height = dimensionMultiplier * nativeHeight + 20;
-    image.width = dimensionMultiplier * nativeWidth;
+  /* If screen width and height are greater than mins, scale up card size to at most 1.5x */
+  if (screenWidth > 320 && screenHeight > 540) {
+    let dimensionMultiplier = Math.min(1.5, screenWidth / 320, screenHeight / 540);
+    image.height = dimensionMultiplier * nativeCardHeight + 20;
+    image.width = dimensionMultiplier * nativeCardWidth;
   } else {
-    image.height = nativeHeight + 20;
-    image.width = nativeWidth;
+    image.height = nativeCardHeight + 20;
+    image.width = nativeCardWidth;
+  }
+
+  /* Set cards class height */
+  for (let element of cardElements) {
+    element.style.height = image.height + 20 + "px";
   }
   
   displayElement.append(li);
@@ -112,18 +121,6 @@ function displayPlayerOneHand() {
 function displayPlayerTwoHand() {
   playerTwo.handDisplay.textContent = "";
   playerTwo.cards.forEach(card => displayCard(card, "down", playerTwo.handDisplay));
-}
-
-
-function playedCardText(playedCard) {
-  let text = "";
-
-  if (playedCard.face == "up") {
-    text = playedCard.card.id + " (" + playedCard.face + ")";
-  } else if (playedCard.face == "down") {
-    text = "?? (" + playedCard.face + ")";
-  }
-  return(text);
 }
 
 function displayPlayedCard(player) {
@@ -181,6 +178,8 @@ function displayGame() {
 function computerPlaysCard(face) {
   playerTwo.playedCard.card = playerTwo.cards[Math.floor(Math.random() * playerTwo.cards.length)];
   playerTwo.playedCard.face = face;
+
+  /* Remove card from hand */
   playerTwo.cards = playerTwo.cards.filter(c => c.id != playerTwo.playedCard.card.id);
 
   if (face === "down") {
@@ -205,6 +204,8 @@ async function playCard(cardImage) {
 
     const playedCard = playerOne.cards.filter(c => c.id === cardImage.alt)[0];
     playerOne.playedCard.card = playedCard;
+
+    /* Remove card from hand */
     playerOne.cards = playerOne.cards.filter(c => c.id != cardImage.alt);
 
     if (gameState === 1) {
@@ -285,6 +286,9 @@ async function guessRelationship(relationshipButton) {
     await sleep(1000);
 
     endTurn();
+    displayGame();
+
+    await sleep(1000);
 
     /* Only play card if gameState is 0, otherwise game has ended */
     if (gameState === 0) {
