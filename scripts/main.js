@@ -93,8 +93,8 @@ function displayCard(card, face, displayElement) {
   }
  
   /* If screen width and height are greater than mins, scale up card size to at most 1.5x */
-  if (screenWidth > 320 && screenHeight > 540) {
-    let dimensionMultiplier = Math.min(1.5, screenWidth / 320, screenHeight / 540);
+  if (screenWidth > 320 && screenHeight > 570) {
+    let dimensionMultiplier = Math.min(1.5, screenWidth / 320, screenHeight / 570);
     image.height = dimensionMultiplier * nativeCardHeight + 20;
     image.width = dimensionMultiplier * nativeCardWidth;
   } else {
@@ -389,6 +389,15 @@ equalButton.onclick = function() {
 }
 lowerButton.onclick = function() {
   guessRelationship(lowerButton);
+}
+
+const modal = document.getElementById("modal");
+const mask = document.getElementById("mask");
+const settingsButton = document.getElementById("settings");
+settingsButton.onclick = function() {
+  mask.style.visibility = "visible";
+  mask.style.opacity = "1";
+  modal.style.display="block";
 }
 
 displayGame();
