@@ -1,12 +1,30 @@
 /* Card images courtesy of https://code.google.com/archive/p/vector-playing-cards/ */
 
-#gameArea {
- width: 100%;
- min-width: 320px;
- text-align: center;
+/* Elements */
+button {
+  background-color: #f1f1f1;
+  border: none;
+  padding: 10px;
 }
 
-#buttonArea {
+button:hover {
+  background-color: #dddddd;
+}
+
+button.active {
+  background-color: #cccccc
+}
+
+li {
+  display: inline;
+  text-align: center;
+  padding: 5px;
+}
+
+
+/* Classes */
+.cards {
+  height: 148.9px;
   padding: 10px;
 }
 
@@ -16,35 +34,56 @@
   margin: auto;
 }
 
-.cards {
-  height: 148.9px;
+.tabBar {
+  background-color: #f1f1f1;
+  height: 44px;
+  width: 100%;
+}
+
+.tabBar button {
+  float: left;
+}
+
+
+/* IDs */
+#backToGameButton {
+  display: none;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#buttonArea {
   padding: 10px;
 }
 
-li {
-  display: inline;
-  text-align: center;
+#gameArea {
+ width: 100%;
+ min-width: 320px;
+ text-align: center;
+}
+
+#gameOutcome {
+  display: none;
+  margin-top: 10px;
+  margin-bottom: 0px;
+}
+
+#gameType button {
+  width: 110px;
   padding: 5px;
 }
 
-#modal {
-  display: none;
-  position: fixed;
-  top: 10%;
-  left: 10%;
-  width: 80%;
-  height: 80%; 
-
-  background: rgba(255, 255, 255);
-
-  z-index: 100;
+@media (max-width: 425px) {
+  #gameType button {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
-#modal-content {
-  position: relative; 
-  background-color: white;
-  padding: 20px; 
-  margin: auto; 
-  width: 75%;  
+
+#instructionsTab {
+  display: none;
 }
 
 #mask{
@@ -55,9 +94,43 @@ li {
   height: 100%;
   background: rgba(52, 73, 94, 0.8);
   z-index: 50;
-  visibility: hidden;
+  visibility: visible;
   
-  opacity: 0;
+  opacity: 1;
   
   transition: 0.7s;
+}
+
+#modal {
+  display: block;
+  position: fixed;
+  top: 10%;
+  left: 10%;
+  width: 80%;
+  height: 80%; 
+  max-height: min(550px, calc(100vh * 0.8));
+
+  background: rgba(255, 255, 255);
+
+  z-index: 100;
+}
+
+@media (max-height: 700px) {
+  #modal{
+    top: 5%;
+    height: 90%;
+    max-height: min(550px, calc(100vh * 0.9));
+  }
+}
+
+#modalContent {
+  background-color: white;
+  text-align: center;
+
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+#settingsTab {
+  display: block;
 }

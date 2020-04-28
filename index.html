@@ -19,7 +19,7 @@
     <div id="gameArea">
 
       <div id="buttonArea">
-        <button id="settings">Settings</button>
+        <button id="modalButton">Settings</button>
       </div>
 
       <div class="cards">
@@ -61,12 +61,40 @@
 
     <div id="mask"></div>
     <div class="center", id="modal">
-      <div>
-        <p>Settings</p>
-      </div>
-      <div>
-        <p>Instructions</p>
-      </div>
+      <div class="tabBar">
+        <button class="active" id="settingsTabButton">Settings</button>
+        <button id="instructionsTabButton">Instructions</button>
+      </div>      
+      <div id="modalContent">
+
+        <div id="settingsTab">
+          <button id="backToGameButton">Back To Game</button>
+          <p id="gameOutcome">""</p>
+          <br>
+          <p style="margin-bottom: 0px">Your Record:</p>
+          <p id="record">0-0</p>
+          <div id="gameType">
+            <button id="quickGameButton">Quick Game<br>(5 points)</button>
+            <button class="active" id="halfGameButton">Half Game<br>(11 points)</button>
+            <button id="fullGameButton">Full Game<br>(11 points)</button>
+          </div>
+          <br>
+          <div>
+            <label for="gameSpeedRange">Game Speed:</label>
+            <br>
+            Slow
+            <input type="range" id="gameSpeedRange" name="gameSpeedRange" min="0.25" max="1.75" step="0.25">
+            Fast
+          </div>
+          <br>
+          <button id="startNewGameButton">Start New Game</button>
+        </div>
+
+        <div id="instructionsTab">
+          <p>Instructions</p>
+        </div>
+
+      </div>     
     </div>
 
     <script src="scripts/main.js"></script>

@@ -42,8 +42,8 @@ class Player {
     this.cards = [];
     this.score = 0;
     this.playedCard = new PlayedCard(blankCard, "");
-    this.playedCardDisplay = document.querySelector("#" + player + "Played");
-    this.handDisplay = document.querySelector("#" + player + "Hand");
+    this.playedCardDisplay = document.getElementById(player + "Played");
+    this.handDisplay = document.getElementById(player + "Hand");
   }
 }
 
@@ -54,14 +54,13 @@ class PlayedCard {
   }
 }
 
-const blankCard = new Card("", "", "");
-
 /* Update display when screen size changes */
 const nativeCardHeight = 72.6;
 const nativeCardWidth = 50;
 
 let screenWidth = window.screen.availWidth;
 let screenHeight = window.screen.availHeight;
+
 window.onresize = function() {
   screenWidth = window.screen.availWidth;
   screenHeight = window.screen.availHeight;
@@ -69,9 +68,9 @@ window.onresize = function() {
 }
 
 
-
-
-
+/*********************** 
+Functions 
+************************/
 /* Display Functions */
 function displayCard(card, face, displayElement) {
 
@@ -111,7 +110,6 @@ function displayCard(card, face, displayElement) {
 
   li.append(image);
 }
-
 
 function displayPlayerOneHand() {
   playerOne.handDisplay.textContent = "";
@@ -217,7 +215,7 @@ async function playCard(cardImage) {
       gameState = 0;
       displayAction();
 
-      await sleep(1000);
+      await sleep(1000 / gameSpeed);
       computerPlaysCard("down");
 
     } else if (gameState === 3) {
@@ -230,24 +228,24 @@ async function playCard(cardImage) {
       gameState = 0;
       displayAction();
 
-      await sleep(1000);
+      await sleep(1000 / gameSpeed);
 
       let guess = computerGuessesRelationship();
 
       actionDisplay.textContent = "Opponent guesses " + guess;
 
-      await sleep(1000);
+      await sleep(1000 / gameSpeed);
 
       playerOne.playedCard.face = "up";
       displayPlayedCard(playerOne);
 
-      await sleep(1000);
+      await sleep(1000 / gameSpeed);
 
       const truth = compareCards(playerTwo.playedCard.card, playerOne.playedCard.card);
 
       displayComparison(guess, truth);
 
-      await sleep(1000);
+      await sleep(1000 / gameSpeed);
 
       changeScore(playerTwo, playerOne, guess, truth);
 
@@ -260,7 +258,6 @@ async function playCard(cardImage) {
   }
 }
 
-
 async function guessRelationship(relationshipButton) {
   if (gameState === 2) {
     
@@ -270,12 +267,12 @@ async function guessRelationship(relationshipButton) {
 
     const guess = relationshipButton.id;
 
-    await sleep(1000);
+    await sleep(1000 / gameSpeed);
 
     playerTwo.playedCard.face = "up";
     displayGame();
 
-    await sleep(1000);
+    await sleep(1000 / gameSpeed);
 
     const truth = compareCards(playerOne.playedCard.card, playerTwo.playedCard.card);
 
@@ -283,12 +280,12 @@ async function guessRelationship(relationshipButton) {
 
     changeScore(playerOne, playerTwo, guess, truth);
 
-    await sleep(1000);
+    await sleep(1000 / gameSpeed);
 
     endTurn();
     displayGame();
 
-    await sleep(1000);
+    await sleep(1000 / gameSpeed);
 
     /* Only play card if gameState is 0, otherwise game has ended */
     if (gameState === 0) {
@@ -299,7 +296,6 @@ async function guessRelationship(relationshipButton) {
     displayGame();
   }
 }
-
 
 function changeScore(guesser, player, guess, truth) {
   if (guess === truth) {
@@ -313,7 +309,6 @@ function changeScore(guesser, player, guess, truth) {
     }
 }
 
-
 function compareCards(guesserCard, playerCard) {
   if (playerCard.value > guesserCard.value) {
     return "higher";
@@ -325,33 +320,71 @@ function compareCards(guesserCard, playerCard) {
 }
 
 function resetPlayedCards() {
-  playerOne.playedCard = new PlayedCard(new Card("", "", ""), "");
-  playerTwo.playedCard = new PlayedCard(new Card("", "", ""), "");
+  playerOne.playedCard = new PlayedCard(blankCard, "");
+  playerTwo.playedCard = new PlayedCard(blankCard, "");
 
   playerOne.playedCardDisplay.textContent = "";
   playerTwo.playedCardDisplay.textContent = "";
 }
 
-function endTurn() {
+async function endTurn() {
   resetPlayedCards();
 
   if (playerOne.cards.length === 0) {
+    deck.shuffleDeck();
     playerOne.cards = deck.dealCards(5);
     playerTwo.cards = deck.dealCards(5);
   }
-  if (playerOne.score >= 5) {
-    gameState = 4; 
-  } else if (playerTwo.score >= 5) {
-    gameState = 5;
+
+  if (Math.max(playerOne.score, playerTwo.score) >= winningScore) {
+    if (playerOne.score >= winningScore) {
+      playerWins++;
+      gameState = 4; 
+    } else if (playerTwo.score >= winningScore) {
+      playerLosses--;
+      gameState = 5;
+    }
+    gameOutcomeDisplay.textContent = actions[gameState];
+    displayGame();
+
+    await sleep(1000 / gameSpeed);
+
+    backToGameButton.style.display = "none";
+    gameOutcomeDisplay.style.display = "block";
+
+    recordDisplay.textContent = playerWins + "-" + playerLosses;
+    openModal();
+
   }
 }
 
+/* Utility Functions */
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 
 /* Initialize Objects */
+const blankCard = new Card("", "", "");
+
+function startGame() {
+  gameState = 1;
+
+  deck = new Deck;
+  playerOne = new Player("You", "playerOne");
+  playerTwo = new Player("Computer", "playerTwo");
+
+  deck.shuffleDeck();
+
+  playerOne.cards = deck.dealCards(5);
+  playerTwo.cards = deck.dealCards(5);
+
+  displayGame();
+}
+
+let playerWins = 0;
+let playerLosses = 0;
+
 let actions = [
   "...",
   "Choose a card to play face up.",
@@ -362,20 +395,22 @@ let actions = [
 ]
 let gameState = 1;
 
+let winningScore = 11;
+let gameSpeed = 1;
+
 let deck = new Deck;
 let playerOne = new Player("You", "playerOne");
 let playerTwo = new Player("Computer", "playerTwo");
 
-deck.shuffleDeck();
 
-playerOne.cards = deck.dealCards(5);
-playerTwo.cards = deck.dealCards(5);
+const gameOutcomeDisplay = document.getElementById("gameOutcome");
+const recordDisplay = document.getElementById("record");
 
-const scoreDisplay = document.querySelector("#score");
+const scoreDisplay = document.getElementById("score");
 const actionDisplay = document.querySelector("div.action p");
 
 /** @type {HTMLElement} */
-const relationshipButtons = document.querySelector("#relationshipButtons");
+const relationshipButtons = document.getElementById("relationshipButtons");
 
 const higherButton = document.getElementById("higher");
 const equalButton = document.getElementById("equal");
@@ -391,13 +426,101 @@ lowerButton.onclick = function() {
   guessRelationship(lowerButton);
 }
 
+
+
+const startNewGameButton = document.getElementById("startNewGameButton")
+const backToGameButton = document.getElementById("backToGameButton")
+startNewGameButton.onclick = function() {
+  startGame();
+
+  closeModal();
+
+  gameOutcomeDisplay.style.display = "none";
+  backToGameButton.style.display = "block";
+}
+
+backToGameButton.onclick = function() {
+  closeModal();
+}
+
+
+/* Modal */
 const modal = document.getElementById("modal");
 const mask = document.getElementById("mask");
-const settingsButton = document.getElementById("settings");
-settingsButton.onclick = function() {
+const modalButton = document.getElementById("modalButton");
+
+modalButton.onclick = function() {
+  openModal();
+};
+
+function openModal() {
   mask.style.visibility = "visible";
   mask.style.opacity = "1";
-  modal.style.display="block";
+
+  modal.style.display = "block";
+}
+
+function closeModal() {
+  mask.style.visibility = "hidden";
+  mask.style.opacity = "0";
+
+  modal.style.display = "none";
+}
+
+const settingsTab = document.getElementById("settingsTab");
+const instructionsTab = document.getElementById("instructionsTab");
+
+const settingsTabButton = document.getElementById("settingsTabButton");
+const instructionsTabButton = document.getElementById("instructionsTabButton");
+
+settingsTabButton.onclick = function() {
+  settingsTabButton.classList.add("active");
+  instructionsTabButton.classList.remove("active");
+
+  settingsTab.style.display = "block";
+  instructionsTab.style.display = "none";
+}
+
+instructionsTabButton.onclick = function() {
+  settingsTabButton.classList.remove("active");
+  instructionsTabButton.classList.add("active");
+
+  settingsTab.style.display = "none";
+  instructionsTab.style.display = "block";
+}
+
+const quickGameButton = document.getElementById("quickGameButton");
+const halfGameButton = document.getElementById("halfGameButton");
+const fullGameButton = document.getElementById("fullGameButton");
+
+quickGameButton.onclick = function() {
+  winningScore = 5; 
+
+  quickGameButton.classList.add("active");
+  halfGameButton.classList.remove("active");
+  fullGameButton.classList.remove("active");
+}
+
+halfGameButton.onclick = function() {
+  winningScore = 11; 
+  
+  quickGameButton.classList.remove("active");
+  halfGameButton.classList.add("active");
+  fullGameButton.classList.remove("active");
+}
+
+fullGameButton.onclick = function() {
+  winningScore = 21; 
+  
+  quickGameButton.classList.remove("active");
+  halfGameButton.classList.remove("active");
+  fullGameButton.classList.add("active");
+}
+
+const gameSpeedRange = document.getElementById("gameSpeedRange");
+
+gameSpeedRange.onchange = function() {
+  gameSpeed = gameSpeedRange.value;
 }
 
 displayGame();
