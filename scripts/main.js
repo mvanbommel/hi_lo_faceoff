@@ -1,4 +1,6 @@
-/* Initialize Classes */
+/*********************** 
+Initialize Classes
+************************/
 class Card {
   constructor(suit, rank, value) {
     this.suit = suit;
@@ -173,6 +175,21 @@ function displayGame() {
 
 
 /* Game Functions */
+function startGame() {
+  gameState = 1;
+
+  deck = new Deck;
+  playerOne = new Player("You", "playerOne");
+  playerTwo = new Player("Computer", "playerTwo");
+
+  deck.shuffleDeck();
+
+  playerOne.cards = deck.dealCards(5);
+  playerTwo.cards = deck.dealCards(5);
+
+  displayGame();
+}
+
 function computerPlaysCard(face) {
   playerTwo.playedCard.card = playerTwo.cards[Math.floor(Math.random() * playerTwo.cards.length)];
   playerTwo.playedCard.face = face;
@@ -358,32 +375,31 @@ async function endTurn() {
   }
 }
 
+/* Modal Functions */
+function openModal() {
+  mask.style.visibility = "visible";
+  mask.style.opacity = "1";
+
+  modal.style.display = "block";
+}
+
+function closeModal() {
+  mask.style.visibility = "hidden";
+  mask.style.opacity = "0";
+
+  modal.style.display = "none";
+}
+
 /* Utility Functions */
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 
-/* Initialize Objects */
+/*********************** 
+Initialize Objects
+************************/
 const blankCard = new Card("", "", "");
-
-function startGame() {
-  gameState = 1;
-
-  deck = new Deck;
-  playerOne = new Player("You", "playerOne");
-  playerTwo = new Player("Computer", "playerTwo");
-
-  deck.shuffleDeck();
-
-  playerOne.cards = deck.dealCards(5);
-  playerTwo.cards = deck.dealCards(5);
-
-  displayGame();
-}
-
-let playerWins = 0;
-let playerLosses = 0;
 
 let actions = [
   "...",
@@ -393,6 +409,10 @@ let actions = [
   "YOU WIN!",
   "YOU LOSE!"
 ]
+
+let playerWins = 0;
+let playerLosses = 0;
+
 let gameState = 1;
 
 let winningScore = 11;
@@ -403,9 +423,7 @@ let playerOne = new Player("You", "playerOne");
 let playerTwo = new Player("Computer", "playerTwo");
 
 
-const gameOutcomeDisplay = document.getElementById("gameOutcome");
-const recordDisplay = document.getElementById("record");
-
+/* Game Elements */
 const scoreDisplay = document.getElementById("score");
 const actionDisplay = document.querySelector("div.action p");
 
@@ -426,46 +444,19 @@ lowerButton.onclick = function() {
   guessRelationship(lowerButton);
 }
 
-
-
-const startNewGameButton = document.getElementById("startNewGameButton")
-const backToGameButton = document.getElementById("backToGameButton")
-startNewGameButton.onclick = function() {
-  startGame();
-
-  closeModal();
-
-  gameOutcomeDisplay.style.display = "none";
-  backToGameButton.style.display = "block";
-}
-
-backToGameButton.onclick = function() {
-  closeModal();
-}
-
-
-/* Modal */
+/* Modal Elements */
 const modal = document.getElementById("modal");
 const mask = document.getElementById("mask");
-const modalButton = document.getElementById("modalButton");
 
+const gameOutcomeDisplay = document.getElementById("gameOutcome");
+const recordDisplay = document.getElementById("record");
+
+
+const modalButton = document.getElementById("modalButton");
 modalButton.onclick = function() {
   openModal();
 };
 
-function openModal() {
-  mask.style.visibility = "visible";
-  mask.style.opacity = "1";
-
-  modal.style.display = "block";
-}
-
-function closeModal() {
-  mask.style.visibility = "hidden";
-  mask.style.opacity = "0";
-
-  modal.style.display = "none";
-}
 
 const settingsTab = document.getElementById("settingsTab");
 const instructionsTab = document.getElementById("instructionsTab");
@@ -487,6 +478,21 @@ instructionsTabButton.onclick = function() {
 
   settingsTab.style.display = "none";
   instructionsTab.style.display = "block";
+}
+
+
+const startNewGameButton = document.getElementById("startNewGameButton")
+const backToGameButton = document.getElementById("backToGameButton")
+startNewGameButton.onclick = function() {
+  startGame();
+
+  closeModal();
+
+  gameOutcomeDisplay.style.display = "none";
+  backToGameButton.style.display = "block";
+}
+backToGameButton.onclick = function() {
+  closeModal();
 }
 
 const quickGameButton = document.getElementById("quickGameButton");
@@ -518,11 +524,9 @@ fullGameButton.onclick = function() {
 }
 
 const gameSpeedRange = document.getElementById("gameSpeedRange");
-
 gameSpeedRange.onchange = function() {
   gameSpeed = gameSpeedRange.value;
 }
 
+/* Display Game */
 displayGame();
-
-
