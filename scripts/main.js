@@ -348,7 +348,9 @@ async function endTurn() {
   resetPlayedCards();
 
   if (playerOne.cards.length === 0) {
+    deck = new Deck;
     deck.shuffleDeck();
+
     playerOne.cards = deck.dealCards(5);
     playerTwo.cards = deck.dealCards(5);
   }

@@ -84,6 +84,8 @@ li {
 
 #instructionsTab {
   display: none;
+  padding: 25px;
+  text-align: left;
 }
 
 #mask{
@@ -105,27 +107,45 @@ li {
   display: block;
   position: fixed;
   top: 10%;
-  left: 10%;
-  width: 80%;
+  left: calc((100vw - 700px) / 2);
+  
   height: 80%; 
-  max-height: min(550px, calc(100vh * 0.8));
+  max-height: min(600px, calc(100vh * 0.8));
+
+  width: 80%;
+  min-width: 320px;
+  max-width: min(700px, calc(100vw * 0.8));
 
   background: rgba(255, 255, 255);
 
   z-index: 100;
 }
 
-@media (max-height: 700px) {
-  #modal{
+@media (max-height: calc(600px / 0.8)) {
+  #modal {
     top: 5%;
     height: 90%;
     max-height: min(550px, calc(100vh * 0.9));
   }
 }
 
+@media (max-width: calc(700px / 0.8)) {
+  #modal {
+    left: 10%;
+  }
+}
+
+@media (max-width: calc(320px / 0.8)) {
+  #modal {
+    left: max(0px, calc((100vw - 320px) / 2));
+  }
+}
+
 #modalContent {
   background-color: white;
-  text-align: center;
+
+  padding-top: 10px;
+  padding-bottom: 20px;
 
   max-height: 100%;
   overflow-y: auto;
@@ -133,4 +153,5 @@ li {
 
 #settingsTab {
   display: block;
+  text-align: center;
 }
