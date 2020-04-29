@@ -94,8 +94,8 @@ function displayCard(card, face, displayElement) {
   }
  
   /* If screen width and height are greater than mins, scale up card size to at most 1.5x */
-  if (screenWidth > 320 && screenHeight > 570) {
-    let dimensionMultiplier = Math.min(1.5, screenWidth / 320, screenHeight / 570);
+  if (screenWidth > 320 && screenHeight > 630) {
+    let dimensionMultiplier = Math.min(1.5, screenWidth / 320, screenHeight / 630);
     image.height = dimensionMultiplier * nativeCardHeight + 20;
     image.width = dimensionMultiplier * nativeCardWidth;
   } else {
