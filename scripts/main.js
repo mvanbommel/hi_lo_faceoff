@@ -207,7 +207,15 @@ function computerPlaysCard(face) {
 }
 
 function computerGuessesRelationship() {
-  const guessOptions = ["higher", "higher", "higher", "higher", "equal", "lower", "lower", "lower", "lower"];
+
+  const faceUpValue = playerTwo.playedCard.card.value;
+
+  const higherOptions = Array(13 - faceUpValue).fill("higher");
+  const lowerOptions = Array(faceUpValue - 1).fill("lower");
+  const equalOptions = ["equal"];
+
+  const guessOptions = equalOptions.concat(higherOptions, lowerOptions);
+
   const guess = guessOptions[Math.floor(Math.random() * guessOptions.length)];
 
   return(guess)
