@@ -1,21 +1,24 @@
 /* Card images courtesy of https://code.google.com/archive/p/vector-playing-cards/ */
 
 /* Elements */
-button {
+#gameArea button,
+#modal button {
   background-color: #f1f1f1;
   border: none;
   padding: 10px;
 }
 
-button:hover {
+#gameArea button:hover,
+#modal button:hover {
   background-color: #dddddd;
 }
 
-button.active {
+#gameArea button.active,
+#modal button.active {
   background-color: #cccccc
 }
 
-li {
+#gameArea li {
   display: inline;
   text-align: center;
   padding: 5px;
