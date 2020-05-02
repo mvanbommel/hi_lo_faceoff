@@ -61,10 +61,11 @@
 }
 
 #gameArea {
- width: 100%;
- min-width: 320px;
- padding-top: 50px;
- text-align: center;
+  width: 100%;
+  min-width: 320px;
+  padding-top: 50px;
+  text-align: center;
+  font-size: 16px;
 }
 
 #gameOutcome {
@@ -108,9 +109,12 @@
 }
 
 #modal {
+  font-size: 16px;
+  
   display: block;
   position: fixed;
-  top: 10%;
+  margin-top: 50px;
+  top: 5%;
   left: calc((100vw - 700px) / 2);
   
   height: 80%; 
@@ -125,11 +129,11 @@
   z-index: 100;
 }
 
-@media (max-height: calc(600px / 0.8)) {
+@media (max-height: calc(600px / 0.9)) {
   #modal {
-    top: 5%;
-    height: 90%;
-    max-height: min(550px, calc(100vh * 0.9));
+    top: 0%;
+    height: calc(100vh - 50px);
+    max-height: 600px;
   }
 }
 
