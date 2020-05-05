@@ -15,7 +15,7 @@ class Deck {
       this.cards = [];    
 
       const suits = ['clubs', 'diamonds', 'hearts', 'spades'];
-     const ranks = ['ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king'];
+      const ranks = ['ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king'];
       const values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]; 
 
       for (let i = 0; i < suits.length; i++) {
@@ -363,11 +363,10 @@ async function endTurn() {
     playerTwo.cards = deck.dealCards(5);
   }
 
-  if (Math.max(playerOne.score, playerTwo.score) >= winningScore) {
-    if (playerOne.score >= winningScore) {
+    if (playerOne.score > playerTwo.score && playerOne.score >= winningScore) {
       playerWins++;
       gameState = 4; 
-    } else if (playerTwo.score >= winningScore) {
+    } else if (playerTwo.score > playerOne.score && playerTwo.score >= winningScore) {
       playerLosses--;
       gameState = 5;
     }
